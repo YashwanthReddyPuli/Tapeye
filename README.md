@@ -164,8 +164,58 @@ python visual/predict.py --image data/raw/visual/good/good_fruit_1.jpg
 }
 ```
 
-- **Phase 4: Late Fusion** - Ensembling and meta-classifier implementation combining acoustic and visual prediction probabilities.
+### Phase 4: Late-Fusion Meta-Classifier
+The late-fusion module concatenates the probability distributions from both the acoustic branch ($P_{\text{acoustic}}$) and visual branch ($P_{\text{visual}}$) into a fused feature vector ($F_{\text{fused}} = [P_A \parallel P_V]$), training a meta-classifier to output the final produce quality verdict.
+
+#### 1. Manifest Pairing (`fusion_pairs.csv`):
+Create `data/raw/fusion_pairs.csv` pairing corresponding audio recordings and produce images:
+```csv
+audio_path,image_path,label
+data/raw/acoustic/good_tap_1.wav,data/raw/visual/good/good_fruit_1.jpg,good
+data/raw/acoustic/borderline_tap_1.wav,data/raw/visual/borderline/borderline_fruit_1.jpg,borderline
+data/raw/acoustic/bad_tap_1.wav,data/raw/visual/bad/bad_fruit_1.jpg,bad
+```
+*(Or auto-generate paired samples via `python scripts/create_fusion_pairs.py`)*
+
+#### 2. Building the Fused Dataset:
+```bash
+python fusion/build_fusion_dataset.py
+```
+*Runs acoustic and visual branch inference on every pair, concatenates 3-class probability vectors into a 6-element feature vector, splits data 80/20 (stratified), and saves `data/processed/fusion/dataset.pkl`.*
+
+#### 3. Training the Meta-Classifier & Benchmark Evaluation:
+```bash
+python fusion/train_meta_classifier.py
+```
+*Trains Logistic Regression and Decision Tree meta-classifiers. Evaluates unimodal acoustic-only vs unimodal visual-only vs multimodal late-fusion predictions on the same test set, saving the winning model to `models/fusion_classifier.pkl` and writing a comparison report to `models/fusion_comparison_report.txt`.*
+
+#### 4. Running Final Verdict Dual-Modal Inference:
+```bash
+python fusion/predict.py --audio data/raw/acoustic/good_tap_1.wav --image data/raw/visual/good/good_fruit_1.jpg
+```
+*Outputs final verdict, fusion confidence, and individual branch breakdowns:*
+```json
+{
+  "final_verdict": "good",
+  "fusion_confidence": 0.5418,
+  "fused_probabilities": {
+    "bad": 0.1610,
+    "borderline": 0.2972,
+    "good": 0.5418
+  },
+  "acoustic_branch": {
+    "predicted_class": "good",
+    "probabilities": { "bad": 0.0817, "borderline": 0.4210, "good": 0.4973 }
+  },
+  "visual_branch": {
+    "predicted_class": "good",
+    "probabilities": { "bad": 0.1494, "borderline": 0.1986, "good": 0.6520 }
+  }
+}
+```
+
 - **Phase 5: Integration** - End-to-end evaluation pipeline and unified inference module.
+
 
 
 
