@@ -124,8 +124,48 @@ python acoustic/predict.py --audio data/raw/acoustic/good_tap_1.wav
 }
 ```
 
-- **Phase 3: Visual Pipeline** - Transfer learning with MobileNetV2 architecture using OpenCV and TensorFlow for image classification.
+### Phase 3: Visual Pipeline
+The visual pipeline utilizes transfer learning with a MobileNetV2 architecture pretrained on ImageNet to predict external produce quality from images (surface blemishes, bruising, discoloration, ripeness).
+
+#### 1. Image Data Organization:
+Place raw produce images into subdirectories inside `data/raw/visual/` named by quality class:
+```text
+data/raw/visual/
+├── good/       # Fresh, unblemished produce images
+├── borderline/ # Slightly spotty or ripening produce images
+└── bad/        # Bruised, rotten, or discolored produce images
+```
+
+#### 2. Building the Visual Dataset:
+```bash
+python visual/dataset_builder.py
+```
+*Preprocesses images to $224 \times 224$ RGB, scales pixel values to $[-1, 1]$, splits data into 70/15/15 train/val/test sets, applies data augmentation to training data (horizontal flip, random brightness jitter), and saves `data/processed/visual/dataset.pkl`.*
+
+#### 3. Training the MobileNetV2 Classifier:
+```bash
+python visual/train_classifier.py
+```
+*Loads pretrained MobileNetV2, freezes base layers to train the custom classification head, fine-tunes top convolutional layers, evaluates test performance, saves the model to `models/visual_classifier.keras`, and outputs metrics to `models/visual_classifier_metrics.txt`.*
+
+#### 4. Running Single-Image Quality Inference:
+```bash
+python visual/predict.py --image data/raw/visual/good/good_fruit_1.jpg
+```
+*Outputs structured class prediction and probability distributions matching the acoustic branch format:*
+```json
+{
+  "predicted_class": "good",
+  "probabilities": {
+    "bad": 0.0130,
+    "borderline": 0.0566,
+    "good": 0.9304
+  }
+}
+```
+
 - **Phase 4: Late Fusion** - Ensembling and meta-classifier implementation combining acoustic and visual prediction probabilities.
 - **Phase 5: Integration** - End-to-end evaluation pipeline and unified inference module.
+
 
 
