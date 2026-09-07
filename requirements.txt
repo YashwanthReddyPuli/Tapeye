@@ -9,3 +9,4 @@ jupyter
 soundfile
 streamlit>=1.30.0
 pillow
+plotly>=5.18.0

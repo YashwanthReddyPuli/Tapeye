@@ -1,138 +1,147 @@
 import os
 import sys
-import streamlit as st
-import matplotlib.pyplot as plt
 import numpy as np
+import plotly.graph_objects as go
+import plotly.express as px
+import streamlit as st
 
 # Ensure repository root is on sys.path
 repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if repo_root not in sys.path:
     sys.path.insert(0, repo_root)
 
-from dashboard.utils import load_evaluation_metrics
+from dashboard.utils import inject_custom_css, load_evaluation_metrics
 
-st.set_page_config(page_title="TapEye - Model Performance & Benchmarks", page_icon="📊", layout="wide")
+st.set_page_config(page_title="TapEye OS - Performance Benchmarks", page_icon="📊", layout="wide")
+inject_custom_css()
 
-st.title("📊 Model Performance & Multimodal Benchmarks")
-st.markdown("Comparative accuracy, F1-scores, and confusion matrices across Acoustic-Only, Visual-Only, and Late-Fusion models.")
+st.title("📊 Multimodal Performance & Model Benchmarks")
+st.markdown("Comparative accuracy, F1-scores, and confusion matrices comparing Acoustic-Only, Visual-Only, and Late-Fusion models.")
 
 metrics_data = load_evaluation_metrics()
 
 if metrics_data is None:
     st.info("💡 **Report Missing**: Evaluation metrics have not been generated yet. Please run `python scripts/evaluate_system.py` first to generate the report.")
 else:
-    # Explicit Project Claim Banner
-    st.success("🌟 **Core Benchmark Claim**: Late fusion outperforms unimodal baselines by combining internal acoustic impact resonance with surface computer vision.")
+    # Core Claim Callout Banner
+    st.markdown("""
+    <div style="background: rgba(41, 182, 246, 0.15); border: 1px solid #29b6f6; border-radius: 12px; padding: 18px; margin-bottom: 24px;">
+        <h4 style="color: #4fc3f7; margin: 0 0 6px 0;">🌟 Core Benchmark Claim</h4>
+        <p style="color: #e6edf3; margin: 0; font-size: 15px;">
+            Late fusion outperforms unimodal baselines by combining internal acoustic impact resonance with surface computer vision, mitigating single-modality error modes.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
     ac_m = metrics_data["acoustic_branch"]
     vis_m = metrics_data["visual_branch"]
     fused_m = metrics_data["fused_multimodal"]
+    gain_pct = metrics_data.get("fusion_improvements", {}).get("accuracy_gain_over_acoustic_pct", 0.0)
 
-    # Top Metric Callout Cards
-    st.subheader("📈 Summary Accuracy & F1 Comparison")
+    # Top st.metric components with explicit delta parameters
+    st.subheader("📈 Summary Metrics & Fusion Delta Gains")
     m_cols = st.columns(3)
 
     with m_cols[0]:
         st.metric(
             label="🔊 Acoustic-Only Branch",
-            value=f"{ac_m['accuracy'] * 100:.1f}%",
-            delta=f"F1: {ac_m['f1_score']:.4f}"
+            value=f"{ac_m['accuracy'] * 100:.1f}% Accuracy",
+            delta=f"F1: {ac_m['f1_score']:.4f}",
+            delta_color="off"
         )
 
     with m_cols[1]:
         st.metric(
             label="👁️ Visual-Only Branch",
-            value=f"{vis_m['accuracy'] * 100:.1f}%",
-            delta=f"F1: {vis_m['f1_score']:.4f}"
+            value=f"{vis_m['accuracy'] * 100:.1f}% Accuracy",
+            delta=f"F1: {vis_m['f1_score']:.4f}",
+            delta_color="off"
         )
 
     with m_cols[2]:
-        gain_pct = metrics_data.get("fusion_improvements", {}).get("accuracy_gain_over_acoustic_pct", 0.0)
         st.metric(
-            label="🎯 Fused Multimodal Scanner",
-            value=f"{fused_m['accuracy'] * 100:.1f}%",
-            delta=f"+{gain_pct:.1f}% over Acoustic"
+            label="🎯 Late-Fusion Multimodal",
+            value=f"{fused_m['accuracy'] * 100:.1f}% Accuracy",
+            delta=f"+{gain_pct:.1f}% gain over Acoustic baseline",
+            delta_color="normal"
         )
 
     st.markdown("---")
 
-    # Bar Chart Comparison
-    st.subheader("📊 Modality Metric Benchmarks")
+    # Grouped Interactive Plotly Bar Chart
+    st.subheader("📊 Modality Metric Benchmarks (Plotly)")
 
-    chart_data = {
-        "Modality": ["Acoustic-Only", "Visual-Only", "Late-Fusion Multimodal"],
-        "Accuracy (%)": [ac_m["accuracy"] * 100, vis_m["accuracy"] * 100, fused_m["accuracy"] * 100],
-        "F1-Score (%)": [ac_m["f1_score"] * 100, vis_m["f1_score"] * 100, fused_m["f1_score"] * 100]
-    }
+    modalities = ["Acoustic-Only", "Visual-Only", "Late-Fusion Multimodal"]
+    accuracies = [ac_m["accuracy"] * 100, vis_m["accuracy"] * 100, fused_m["accuracy"] * 100]
+    f1_scores = [ac_m["f1_score"] * 100, vis_m["f1_score"] * 100, fused_m["f1_score"] * 100]
 
-    # Render Matplotlib Bar Chart
-    fig, ax = plt.subplots(figsize=(9, 4))
-    fig.patch.set_facecolor("#ffffff")
-    ax.set_facecolor("#fafafa")
+    fig_bar = go.Figure()
 
-    x = np.arange(len(chart_data["Modality"]))
-    width = 0.35
+    fig_bar.add_trace(go.Bar(
+        x=modalities,
+        y=accuracies,
+        name="Accuracy (%)",
+        marker_color="#29b6f6",
+        text=[f"{v:.1f}%" for v in accuracies],
+        textposition="auto"
+    ))
 
-    rects1 = ax.bar(x - width/2, chart_data["Accuracy (%)"], width, label="Accuracy (%)", color="#1976d2")
-    rects2 = ax.bar(x + width/2, chart_data["F1-Score (%)"], width, label="F1-Score (%)", color="#388e3c")
+    fig_bar.add_trace(go.Bar(
+        x=modalities,
+        y=f1_scores,
+        name="F1-Score (%)",
+        marker_color="#66bb6a",
+        text=[f"{v:.1f}%" for v in f1_scores],
+        textposition="auto"
+    ))
 
-    ax.set_ylabel("Score (%)", fontsize=10, fontweight="bold")
-    ax.set_title("Performance Comparison Across System Modalities", fontsize=12, fontweight="bold", pad=12)
-    ax.set_xticks(x)
-    ax.set_xticklabels(chart_data["Modality"], fontsize=10, fontweight="bold")
-    ax.set_ylim(0, 115)
-    ax.legend(loc="upper left")
-    ax.grid(axis="y", linestyle=":", alpha=0.6)
+    fig_bar.update_layout(
+        barmode="group",
+        title=dict(text="Comparative Accuracy & F1-Score Across Modalities", font=dict(color="#e6edf3", size=15)),
+        xaxis=dict(title="Pipeline Modality", color="#8b949e", gridcolor="#21262d"),
+        yaxis=dict(title="Score (%)", range=[0, 115], color="#8b949e", gridcolor="#21262d"),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(22,27,34,0.6)",
+        legend=dict(font=dict(color="#e6edf3"), bgcolor="rgba(16,22,30,0.8)"),
+        height=400,
+        margin=dict(l=40, r=40, t=50, b=40)
+    )
 
-    # Bar Value Labels
-    def autolabel(rects):
-        for rect in rects:
-            height = rect.get_height()
-            ax.annotate(f"{height:.1f}%",
-                        xy=(rect.get_x() + rect.get_width() / 2, height),
-                        xytext=(0, 3),
-                        textcoords="offset points",
-                        ha="center", va="bottom", fontsize=9, fontweight="bold")
-
-    autolabel(rects1)
-    autolabel(rects2)
-
-    plt.tight_layout()
-    st.pyplot(fig)
+    st.plotly_chart(fig_bar, use_container_width=True)
 
     st.markdown("---")
 
-    # Confusion Matrices Breakdown
+    # Interactive Plotly Confusion Matrices
     st.subheader("🧩 Confusion Matrices Breakdown")
     cm_cols = st.columns(3)
-
     classes = metrics_data.get("class_names", ["bad", "borderline", "good"])
 
-    def plot_cm(cm_matrix, title, color_map="Blues"):
-        fig_cm, ax_cm = plt.subplots(figsize=(3.5, 3))
-        im = ax_cm.imshow(cm_matrix, cmap=color_map)
-        ax_cm.set_title(title, fontsize=10, fontweight="bold")
-        ax_cm.set_xticks(np.arange(len(classes)))
-        ax_cm.set_yticks(np.arange(len(classes)))
-        ax_cm.set_xticklabels(classes, fontsize=8)
-        ax_cm.set_yticklabels(classes, fontsize=8)
-        plt.setp(ax_cm.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
-
-        for i in range(len(classes)):
-            for j in range(len(classes)):
-                ax_cm.text(j, i, str(cm_matrix[i][j]), ha="center", va="center", color="black" if cm_matrix[i][j] < 2 else "white")
-
-        plt.tight_layout()
+    def create_plotly_cm(cm_array, title, colorscale):
+        fig_cm = px.imshow(
+            cm_array,
+            x=classes,
+            y=classes,
+            labels=dict(x="Predicted Class", y="True Ground Truth"),
+            color_continuous_scale=colorscale,
+            text_auto=True
+        )
+        fig_cm.update_layout(
+            title=dict(text=title, font=dict(color="#e6edf3", size=13)),
+            xaxis=dict(color="#8b949e"),
+            yaxis=dict(color="#8b949e"),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            coloraxis_showscale=False,
+            height=320,
+            margin=dict(l=20, r=20, t=40, b=20)
+        )
         return fig_cm
 
     with cm_cols[0]:
-        st.markdown("**Acoustic Confusion Matrix**")
-        st.pyplot(plot_cm(ac_m["confusion_matrix"], "Acoustic-Only", "Blues"))
+        st.plotly_chart(create_plotly_cm(ac_m["confusion_matrix"], "🔊 Acoustic Confusion Matrix", "Blues"), use_container_width=True)
 
     with cm_cols[1]:
-        st.markdown("**Visual Confusion Matrix**")
-        st.pyplot(plot_cm(vis_m["confusion_matrix"], "Visual-Only", "Purples"))
+        st.plotly_chart(create_plotly_cm(vis_m["confusion_matrix"], "👁️ Visual Confusion Matrix", "Purples"), use_container_width=True)
 
     with cm_cols[2]:
-        st.markdown("**Fused Confusion Matrix**")
-        st.pyplot(plot_cm(fused_m["confusion_matrix"], "Late-Fusion", "Greens"))
+        st.plotly_chart(create_plotly_cm(fused_m["confusion_matrix"], "🎯 Fused Confusion Matrix", "Greens"), use_container_width=True)
