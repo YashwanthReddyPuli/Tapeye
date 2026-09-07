@@ -214,7 +214,46 @@ python fusion/predict.py --audio data/raw/acoustic/good_tap_1.wav --image data/r
 }
 ```
 
-- **Phase 5: Integration** - End-to-end evaluation pipeline and unified inference module.
+### Phase 5: Integration & Evaluation Suite
+Phase 5 integrates the acoustic feature extractor, visual MobileNetV2 network, and late-fusion meta-classifier into a unified single-entry-point scanner interface (`run_scan.py`) and a system-wide benchmark suite (`scripts/evaluate_system.py`).
+
+#### 1. Running the Scanner CLI (`run_scan.py`):
+```bash
+python run_scan.py --audio data/raw/acoustic/good_tap_1.wav --image data/raw/visual/good/good_fruit_1.jpg
+```
+
+**Terminal Output Dashboard:**
+```text
+============================================================
+           TapEye Produce Quality Scan Result
+============================================================
+ Audio Input:  data/raw/acoustic/good_tap_1.wav
+ Image Input:  data/raw/visual/good/good_fruit_1.jpg
+------------------------------------------------------------
+ FINAL VERDICT:     >>> GOOD <<<
+ Fusion Confidence: 54.18%
+------------------------------------------------------------
+ Multimodal Branch Analysis:
+  - Acoustic Branch (Internal Impact):  GOOD       (Confidence:  49.7%)
+  - Visual Branch   (External Surface): GOOD       (Confidence:  65.2%)
+============================================================
+```
+
+#### 2. Running Full System Benchmark Evaluation:
+```bash
+python scripts/evaluate_system.py
+```
+*Evaluates Acoustic-Only vs Visual-Only vs Fused Multimodal Scanner across the test set, outputting text summary to `models/system_evaluation_report.txt` and machine-readable metrics to `models/system_evaluation_metrics.json`.*
+
+#### 3. Running Verification Suites:
+```bash
+python scripts/verify_phase1.py  # Verify acoustic feature extraction
+python scripts/verify_phase2.py  # Verify acoustic classifier
+python scripts/verify_phase3.py  # Verify visual MobileNetV2 pipeline
+python scripts/verify_phase4.py  # Verify late-fusion meta-classifier
+python scripts/verify_phase5.py  # Verify end-to-end scanner & error handling
+```
+
 
 
 
