@@ -82,8 +82,50 @@ The acoustic feature extraction pipeline processes raw impact/tap `.wav` audio f
    ```
    *Generates a 3-panel visualization figure containing the time-domain waveform, raw FFT spectrum, and 13-coefficient MFCC heatmap, saving it to `data/processed/acoustic_feature_visualization.png`.*
 
-- **Phase 2: Acoustic Classifier** - Machine learning classifier training (SVM / Random Forest) on extracted acoustic features.
+### Phase 2: Acoustic Classifier Pipeline
+The acoustic classifier pipeline aggregates extracted acoustic features, constructs a labeled dataset, trains candidate machine learning models (SVM and Random Forest), evaluates model performance, and serves prediction probabilities for individual tap recordings.
+
+#### 1. Data Labeling Conventions:
+TapEye supports two flexible ways to label raw tap audio recordings:
+- **Option A: `labels.csv` (Recommended)**: Create `data/raw/acoustic/labels.csv` with a header `filename,label`:
+  ```csv
+  filename,label
+  tap_sample_01.wav,good
+  tap_sample_02.wav,borderline
+  tap_sample_03.wav,bad
+  ```
+- **Option B: Filename Prefixes**: Prefix filenames with quality classes (e.g., `good_tap_1.wav`, `borderline_tap_1.wav`, `bad_tap_1.wav`, `firm_1.wav`, `overripe_1.wav`).
+
+#### 2. Building the Dataset:
+```bash
+python acoustic/dataset_builder.py
+```
+*Aggregates time-series features into fixed-length vectors (mean, std, min, max pooling), splits data 80/20 (stratified), and saves `data/processed/acoustic/dataset.pkl`.*
+
+#### 3. Training & Evaluating Classifiers:
+```bash
+python acoustic/train_classifier.py
+```
+*Trains SVM (RBF kernel) and Random Forest models via hyperparameter grid search, picks the top-performing model, saves the binary to `models/acoustic_classifier.pkl`, and writes an evaluation summary report to `models/acoustic_classifier_metrics.txt`.*
+
+#### 4. Running Single-File Quality Inference:
+```bash
+python acoustic/predict.py --audio data/raw/acoustic/good_tap_1.wav
+```
+*Outputs structured class prediction and probability distributions:*
+```json
+{
+  "predicted_class": "good",
+  "probabilities": {
+    "bad": 0.0521,
+    "borderline": 0.0924,
+    "good": 0.8555
+  }
+}
+```
+
 - **Phase 3: Visual Pipeline** - Transfer learning with MobileNetV2 architecture using OpenCV and TensorFlow for image classification.
 - **Phase 4: Late Fusion** - Ensembling and meta-classifier implementation combining acoustic and visual prediction probabilities.
 - **Phase 5: Integration** - End-to-end evaluation pipeline and unified inference module.
+
 

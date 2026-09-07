@@ -1,7 +1,11 @@
 import os
 import glob
 import numpy as np
-from feature_extraction import extract_features
+try:
+    from acoustic.feature_extraction import extract_features
+except ModuleNotFoundError:
+    from feature_extraction import extract_features
+
 
 def batch_extract_acoustic_features(raw_dir: str, processed_dir: str):
     """

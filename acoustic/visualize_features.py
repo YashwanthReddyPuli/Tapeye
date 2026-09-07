@@ -5,7 +5,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import librosa.display
 
-from feature_extraction import extract_features
+try:
+    from acoustic.feature_extraction import extract_features
+except ModuleNotFoundError:
+    from feature_extraction import extract_features
+
 
 def plot_acoustic_features(features: dict, audio_filename: str, output_path: str):
     """

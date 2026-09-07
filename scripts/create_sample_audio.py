@@ -1,4 +1,5 @@
 import os
+import csv
 import numpy as np
 from scipy.io import wavfile
 
@@ -18,18 +19,36 @@ def main():
     output_dir = os.path.join("data", "raw", "acoustic")
     os.makedirs(output_dir, exist_ok=True)
     
-    samples = {
-        "sample_tap_firm.wav": (440.0, 30.0),      # High resonance frequency, quick decay (firm fruit)
-        "sample_tap_ripe.wav": (280.0, 20.0),      # Medium resonance frequency, moderate decay (ripe fruit)
-        "sample_tap_overripe.wav": (160.0, 10.0)   # Low resonance frequency, slow decay (overripe/soft fruit)
+    # 15 synthetic tap files across 3 quality classes
+    categories = {
+        "good": {"freq_range": (420, 480), "decay_range": (28, 35), "count": 5},
+        "borderline": {"freq_range": (260, 310), "decay_range": (18, 24), "count": 5},
+        "bad": {"freq_range": (140, 190), "decay_range": (8, 14), "count": 5}
     }
     
+    labels = []
     sr = 22050
-    for filename, (freq, decay) in samples.items():
-        audio_data = generate_tap_sound(frequency=freq, decay=decay, duration=0.5, sr=sr)
-        filepath = os.path.join(output_dir, filename)
-        wavfile.write(filepath, sr, audio_data)
-        print(f"Generated sample audio: {filepath}")
+    np.random.seed(42)  # For reproducibility
+
+    for cat_name, params in categories.items():
+        freqs = np.linspace(params["freq_range"][0], params["freq_range"][1], params["count"])
+        decays = np.linspace(params["decay_range"][0], params["decay_range"][1], params["count"])
+        
+        for i in range(params["count"]):
+            filename = f"{cat_name}_tap_{i+1}.wav"
+            filepath = os.path.join(output_dir, filename)
+            audio_data = generate_tap_sound(frequency=freqs[i], decay=decays[i], duration=0.5, sr=sr)
+            wavfile.write(filepath, sr, audio_data)
+            labels.append((filename, cat_name))
+
+    # Also save labels.csv in data/raw/acoustic/
+    csv_path = os.path.join(output_dir, "labels.csv")
+    with open(csv_path, "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["filename", "label"])
+        writer.writerows(labels)
+
+    print(f"Generated {len(labels)} synthetic labeled audio files and labels.csv in '{output_dir}'.")
 
 if __name__ == "__main__":
     main()
