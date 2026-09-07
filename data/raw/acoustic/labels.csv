@@ -1,0 +1,16 @@
+filename,label
+good_tap_1.wav,good
+good_tap_2.wav,good
+good_tap_3.wav,good
+good_tap_4.wav,good
+good_tap_5.wav,good
+borderline_tap_1.wav,borderline
+borderline_tap_2.wav,borderline
+borderline_tap_3.wav,borderline
+borderline_tap_4.wav,borderline
+borderline_tap_5.wav,borderline
+bad_tap_1.wav,bad
+bad_tap_2.wav,bad
+bad_tap_3.wav,bad
+bad_tap_4.wav,bad
+bad_tap_5.wav,bad

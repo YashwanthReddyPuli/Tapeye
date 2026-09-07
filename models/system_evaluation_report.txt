@@ -1,0 +1,45 @@
+================================================================================
+           TapEye System Evaluation & Benchmark Report
+================================================================================
+Test Set Size: 3 samples | Target Classes: ['bad', 'borderline', 'good']
+
+1. CONSOLIDATED ACCURACY & METRICS COMPARISON:
+--------------------------------------------------------------------------------
+ Modality / Branch           | Accuracy | Precision |  Recall  | F1-Score
+--------------------------------------------------------------------------------
+ Acoustic Branch (Internal)  |   66.67% |    0.5000 |   0.6667 |   0.5556
+ Visual Branch   (Surface)   |   66.67% |    0.5000 |   0.6667 |   0.5556
+ Fused Scanner   (Late-Fusion)|  100.00% |    1.0000 |   1.0000 |   1.0000
+--------------------------------------------------------------------------------
+ Late-Fusion Accuracy Boost over Acoustic-Only: +33.33%
+ Late-Fusion Accuracy Boost over Visual-Only:   +33.33%
+
+2. FUSED MULTIMODAL CLASSIFICATION REPORT:
+              precision    recall  f1-score   support
+
+         bad       1.00      1.00      1.00         1
+  borderline       1.00      1.00      1.00         1
+        good       1.00      1.00      1.00         1
+
+    accuracy                           1.00         3
+   macro avg       1.00      1.00      1.00         3
+weighted avg       1.00      1.00      1.00         3
+
+
+3. CONFUSION MATRICES (Order: ['bad', 'borderline', 'good']):
+--------------------------------------------------------------------------------
+Acoustic-Only Confusion Matrix:
+[[1 0 0]
+ [0 0 1]
+ [0 0 1]]
+
+Visual-Only Confusion Matrix:
+[[0 1 0]
+ [0 1 0]
+ [0 0 1]]
+
+Fused Late-Fusion Confusion Matrix:
+[[1 0 0]
+ [0 1 0]
+ [0 0 1]]
+================================================================================

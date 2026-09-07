@@ -1,31 +1,18 @@
-# Virtual Environment
+node_modules/
+.next/
+__pycache__/
+*.pyc
+.env
+.DS_Store
+temp/
+tmp/
+*.wav
+*.jpg
+*.png
+*.h5
+*.pkl
+*.pt
+*.keras
 venv/
 .venv/
-env/
-ENV/
-
-# Python cache files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints/
-
-# Environment variables
-.env
-
-# Model weights & trained artifacts
-models/*
-!models/.gitkeep
-
-# Datasets
-data/raw/*
-!data/raw/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
-
-# IDE / OS settings
-.vscode/
-.idea/
-.DS_Store
+!data/sample_files/

@@ -42,8 +42,11 @@ def predict_final_verdict(audio_path: str,
     class_names = ["bad", "borderline", "good"]
 
     # 1. Obtain unimodal branch predictions
-    acoustic_res = predict_acoustic(audio_path)
-    visual_res = predict_visual(image_path)
+    ac_model_path = os.path.join(repo_root, "models", "acoustic_classifier.pkl")
+    vis_model_path = os.path.join(repo_root, "models", "visual_classifier.keras")
+    vis_dataset_path = os.path.join(repo_root, "data", "processed", "visual", "dataset.pkl")
+    acoustic_res = predict_acoustic(audio_path, model_path=ac_model_path)
+    visual_res = predict_visual(image_path, model_path=vis_model_path, dataset_path=vis_dataset_path)
 
     # 2. Extract and align probability vectors
     ac_probs = np.array([acoustic_res["probabilities"].get(c, 0.0) for c in class_names], dtype=np.float32)

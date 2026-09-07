@@ -41,7 +41,7 @@ export const SidebarProvider = ({
   setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   animate?: boolean;
 }) => {
-  const [openState, setOpenState] = useState(false);
+  const [openState, setOpenState] = useState(true);
 
   const open = openProp !== undefined ? openProp : openState;
   const setOpen = setOpenProp !== undefined ? setOpenProp : setOpenState;
@@ -89,11 +89,11 @@ export const DesktopSidebar = ({
   return (
     <motion.div
       className={cn(
-        "h-full px-4 py-4 hidden md:flex md:flex-col bg-neutral-900/80 backdrop-blur-md border-r border-neutral-800 w-[280px] flex-shrink-0 z-40",
+        "h-full px-4 py-6 hidden md:flex md:flex-col bg-[#161513] border-r border-[#2d2b26] w-[260px] flex-shrink-0 z-40",
         className
       )}
       animate={{
-        width: animate ? (open ? "280px" : "64px") : "280px",
+        width: animate ? (open ? "260px" : "70px") : "260px",
       }}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
@@ -114,13 +114,13 @@ export const MobileSidebar = ({
     <>
       <div
         className={cn(
-          "h-12 px-4 py-3 flex flex-row md:hidden items-center justify-between bg-neutral-900 border-b border-neutral-800 w-full z-40"
+          "h-14 px-4 py-3 flex flex-row md:hidden items-center justify-between bg-[#161513] border-b border-[#2d2b26] w-full z-40"
         )}
         {...props}
       >
         <div className="flex justify-end z-20 w-full">
           <Menu
-            className="text-neutral-200 cursor-pointer hover:text-primary transition-colors"
+            className="text-[#e6e4df] cursor-pointer hover:text-[#d97757] transition-colors"
             onClick={() => setOpen(!open)}
           />
         </div>
@@ -135,12 +135,12 @@ export const MobileSidebar = ({
                 ease: "easeInOut",
               }}
               className={cn(
-                "fixed h-full w-full inset-0 bg-neutral-950/95 backdrop-blur-xl p-8 z-[100] flex flex-col justify-between border-r border-neutral-800",
+                "fixed h-full w-full inset-0 bg-[#161513] p-8 z-[100] flex flex-col justify-between border-r border-[#2d2b26]",
                 className
               )}
             >
               <div
-                className="absolute right-6 top-6 z-50 text-neutral-200 cursor-pointer hover:text-primary transition-colors"
+                className="absolute right-6 top-6 z-50 text-[#e6e4df] cursor-pointer hover:text-[#d97757] transition-colors"
                 onClick={() => setOpen(!open)}
               >
                 <X />
@@ -168,18 +168,18 @@ export const SidebarLink = ({
     <Link
       href={link.href}
       className={cn(
-        "flex items-center justify-start gap-3 group/sidebar py-3 px-2 rounded-lg hover:bg-neutral-800/60 transition-all duration-200",
+        "flex items-center justify-start gap-3 group/sidebar py-3 px-3 rounded-xl hover:bg-[#24231f] transition-all duration-200",
         className
       )}
       {...props}
     >
-      {link.icon}
+      <div className="shrink-0">{link.icon}</div>
       <motion.span
         animate={{
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="text-neutral-300 font-medium text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+        className="text-[#e6e4df] font-medium text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
       >
         {link.label}
       </motion.span>

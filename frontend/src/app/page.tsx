@@ -1,51 +1,29 @@
 "use client";
 
 import React, { useState } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
-import HolographicBeams from "@/components/ui/beams-background";
-import UploadZone from "@/components/UploadZone";
-import ResultsDashboard from "@/components/ResultsDashboard";
-import ProbabilityRadarChart from "@/components/ProbabilityRadarChart";
-import { LayoutDashboard, BarChart2, Info, Eye, Sparkles, Loader2, RefreshCw } from "lucide-react";
-import Link from "next/link";
+import SensorIntakePanel from "@/components/SensorIntakePanel";
+import DiagnosticResultsView from "@/components/DiagnosticResultsView";
+import { AlertCircle, Terminal } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const sidebarLinks = [
-  {
-    label: "Scanner Dashboard",
-    href: "/",
-    icon: <LayoutDashboard className="text-primary h-5 w-5 flex-shrink-0" />,
-  },
-  {
-    label: "Model Performance",
-    href: "/performance",
-    icon: <BarChart2 className="text-neutral-400 h-5 w-5 flex-shrink-0" />,
-  },
-  {
-    label: "System Architecture",
-    href: "/about",
-    icon: <Info className="text-neutral-400 h-5 w-5 flex-shrink-0" />,
-  },
-];
-
-const SCAN_STEPS = [
-  "Extracting MFCCs & Spectrograms...",
-  "Running MobileNetV2 Vision Inference...",
-  "Fusing Tensors & Meta-Classification...",
+const TRACE_LOGS = [
+  "[INFO] Ingesting multipart/form-data payload...",
+  "[INFO] Audio src: parsed 22050Hz .wav",
+  "[DEBUG] Extracted 13 MFCC coefficients via Librosa",
+  "[INFO] Image src: resampled to 224x224 RGB",
+  "[DEBUG] MobileNetV2 spatial feature pooling complete",
+  "[INFO] Tensors concatenated. Shape: (1, 6)",
+  "[SUCCESS] Late-Fusion SVM inference complete. Yielding verdict.",
 ];
 
 export default function Home() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  // File states
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [audioPreviewUrl, setAudioPreviewUrl] = useState<string | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 
-  // Inference state
   const [isScanning, setIsScanning] = useState(false);
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [visibleLogs, setVisibleLogs] = useState<string[]>([]);
   const [results, setResults] = useState<any | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -68,53 +46,48 @@ export default function Home() {
   };
 
   const runScan = async () => {
-    if (!audioFile || !imageFile) {
-      setErrorMsg("Please upload both an Acoustic audio file (.wav) and a Visual image file (.jpg/.png).");
-      return;
-    }
+    if (!audioFile || !imageFile) return;
 
     setErrorMsg(null);
     setIsScanning(true);
-    setCurrentStepIndex(0);
+    setVisibleLogs([]);
     setResults(null);
 
-    // Simulated stepped progress sequence for UI "Wow" factor
-    const stepInterval = setInterval(() => {
-      setCurrentStepIndex((prev) => {
-        if (prev < SCAN_STEPS.length - 1) {
-          return prev + 1;
-        }
-        return prev;
-      });
-    }, 900);
+    // Sequential trace logs
+    let index = 0;
+    const logInterval = setInterval(() => {
+      if (index < TRACE_LOGS.length) {
+        const nextLog = TRACE_LOGS[index];
+        setVisibleLogs((prev) => [...prev, nextLog]);
+        index++;
+      }
+    }, 320);
 
     try {
       const formData = new FormData();
       formData.append("audio", audioFile);
       formData.append("image", imageFile);
 
-      const response = await fetch("http://localhost:8000/api/scan", {
+      const response = await fetch("http://127.0.0.1:8000/api/scan", {
         method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error(`Inference API error: ${response.statusText}`);
+        const errDetail = await response.text();
+        throw new Error(`Inference Error (${response.status}): ${errDetail || response.statusText}`);
       }
 
       const data = await response.json();
-      
-      // Ensure smooth completion of animation steps
-      setTimeout(() => {
-        clearInterval(stepInterval);
-        setResults(data);
-        setIsScanning(false);
-      }, 2700);
 
+      clearInterval(logInterval);
+      setVisibleLogs(TRACE_LOGS);
+      setResults(data);
     } catch (err: any) {
-      clearInterval(stepInterval);
+      clearInterval(logInterval);
+      setErrorMsg(err.message || "Failed to communicate with FastAPI backend.");
+    } finally {
       setIsScanning(false);
-      setErrorMsg(err.message || "Failed to communicate with FastAPI backend server.");
     }
   };
 
@@ -124,153 +97,150 @@ export default function Home() {
     setAudioPreviewUrl(null);
     setImagePreviewUrl(null);
     setResults(null);
+    setVisibleLogs([]);
     setErrorMsg(null);
   };
 
   return (
-    <div className="flex h-screen w-full bg-background overflow-hidden relative">
-      {/* BACKGROUND HOLOGRAPHIC LIGHT BEAMS */}
-      <HolographicBeams density={20} speed={1.2} aberration={2.5} opacity={40} />
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="max-w-7xl w-full mx-auto space-y-6 text-[#faf9f5]"
+    >
+      {/* ERROR BANNER */}
+      {errorMsg && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="p-4 rounded-[20px] bg-rose-950/30 backdrop-blur-[30px] border border-rose-500/30 text-rose-300 text-xs font-mono flex items-center gap-2.5 shadow-lg"
+        >
+          <AlertCircle size={16} className="text-rose-400 shrink-0" />
+          <span>{errorMsg}</span>
+        </motion.div>
+      )}
 
-      {/* SIDEBAR COMPONENT */}
-      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
-        <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-            <Link href="/" className="font-bold flex space-x-2 items-center text-sm py-2 relative z-20">
-              <div className="h-6 w-6 bg-primary rounded-lg flex items-center justify-center text-white">
-                <Eye className="w-4 h-4" />
-              </div>
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="font-extrabold text-white text-base tracking-wider whitespace-pre"
-              >
-                TapEye OS
-              </motion.span>
-            </Link>
-            <div className="mt-8 flex flex-col gap-2">
-              {sidebarLinks.map((link, idx) => (
-                <SidebarLink key={idx} link={link} />
-              ))}
-            </div>
-          </div>
-        </SidebarBody>
-      </Sidebar>
+      {/* 2-COLUMN SPLIT CONSOLE WITH HYPER-GLASSMORPHISM */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* LEFT COLUMN: SOURCE FILES (5 COLS) */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+          className="lg:col-span-5 bg-white/[0.01] backdrop-blur-[40px] border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.08)] rounded-[24px] overflow-hidden p-6 relative"
+        >
+          <SensorIntakePanel
+            audioFile={audioFile}
+            imageFile={imageFile}
+            onAudioChange={handleAudioChange}
+            onImageChange={handleImageChange}
+            audioPreviewUrl={audioPreviewUrl}
+            imagePreviewUrl={imagePreviewUrl}
+            onExecute={runScan}
+            isScanning={isScanning}
+          />
+        </motion.div>
 
-      {/* MAIN DASHBOARD CONTENT AREA */}
-      <div className="flex-1 h-full overflow-y-auto z-30 p-6 md:p-12 relative flex flex-col items-center">
-        <div className="w-full max-w-4xl space-y-8 my-auto">
-          {/* HEADER */}
-          <div className="text-center space-y-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-900/90 border border-neutral-800 backdrop-blur-md">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-xs font-semibold text-neutral-300 tracking-wide uppercase">
-                Dual-Modal Produce Scanner
-              </span>
-            </div>
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white">
-              TapEye <span className="text-primary font-mono">Late-Fusion</span>
-            </h1>
-            <p className="text-sm md:text-base text-neutral-400 max-w-xl mx-auto">
-              Non-destructive internal quality assessment combining acoustic resonance spectrums with deep surface vision.
-            </p>
-          </div>
-
-          {/* ERROR ALERT */}
-          {errorMsg && (
-            <div className="p-4 rounded-xl bg-rose-950/60 border border-rose-800 text-rose-300 text-sm text-center backdrop-blur-md">
-              {errorMsg}
-            </div>
-          )}
-
-          {/* INPUT/SCANNER CONTROLLER AREA */}
-          {!results && !isScanning && (
-            <div className="flex flex-col items-center gap-8">
-              <UploadZone
-                audioFile={audioFile}
-                imageFile={imageFile}
-                onAudioChange={handleAudioChange}
-                onImageChange={handleImageChange}
-                audioPreviewUrl={audioPreviewUrl}
-                imagePreviewUrl={imagePreviewUrl}
-              />
-
-              <button
-                onClick={runScan}
-                disabled={!audioFile || !imageFile}
-                className={`px-8 py-4 rounded-2xl font-semibold text-base flex items-center gap-3 transition-all duration-300 shadow-lg ${
-                  audioFile && imageFile
-                    ? "bg-primary hover:bg-primary/90 text-white shadow-[0_0_25px_rgba(217,119,87,0.4)] cursor-pointer hover:scale-105"
-                    : "bg-neutral-800 text-neutral-500 cursor-not-allowed border border-neutral-700/50"
-                }`}
-              >
-                <Sparkles className="w-5 h-5" /> Run Dual-Modal Scan
-              </button>
-            </div>
-          )}
-
-          {/* STEPPED LOADING SEQUENCE ANIMATION */}
-          <AnimatePresence>
+        {/* RIGHT COLUMN: DIAGNOSTIC & RESULTS / LIVE EXECUTION TRACE (7 COLS) */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+          className="lg:col-span-7 bg-white/[0.01] backdrop-blur-[40px] border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.08)] rounded-[24px] overflow-hidden p-6 relative min-h-[520px] flex flex-col justify-between"
+        >
+          {/* STATE 1: SCANNING STATE (LIVE EXECUTION TRACE) */}
+          <AnimatePresence mode="wait">
             {isScanning && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="w-full max-w-xl mx-auto p-8 rounded-2xl bg-neutral-900/90 border border-neutral-800 backdrop-blur-xl flex flex-col items-center text-center space-y-6 shadow-2xl"
+                key="scanning"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="space-y-4 my-auto"
               >
-                <div className="relative flex items-center justify-center">
-                  <div className="w-20 h-20 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
-                  <Loader2 className="w-8 h-8 text-primary absolute animate-pulse" />
+                <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+                  <div className="flex items-center gap-2 text-xs font-mono text-[#b7b5a9]">
+                    <Terminal size={14} className="text-[#f97316]" />
+                    <span>Live Execution Trace</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-[#f97316] animate-pulse font-semibold">
+                    PROCESSING...
+                  </span>
                 </div>
 
-                <div className="space-y-2">
-                  <h3 className="text-xl font-bold text-white tracking-tight">
-                    {SCAN_STEPS[currentStepIndex]}
+                <pre className="bg-black/40 backdrop-blur-md border border-white/5 rounded-xl p-5 font-mono text-[11px] leading-relaxed text-[#b7b5a9] shadow-inner overflow-x-auto space-y-1 min-h-[190px]">
+                  {visibleLogs.map((log, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -6 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className={
+                        log.includes("[SUCCESS]")
+                          ? "text-emerald-400 font-semibold"
+                          : log.includes("[DEBUG]")
+                          ? "text-[#9c87f5]"
+                          : "text-zinc-300"
+                      }
+                    >
+                      {log}
+                    </motion.div>
+                  ))}
+                  <span className="inline-block w-1.5 h-3 bg-[#f97316] animate-pulse ml-0.5" />
+                </pre>
+              </motion.div>
+            )}
+
+            {/* STATE 2: RESULTS VIEW */}
+            {!isScanning && results && (
+              <motion.div
+                key="results"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="w-full h-full"
+              >
+                <DiagnosticResultsView results={results} onReset={resetScan} />
+              </motion.div>
+            )}
+
+            {/* STATE 3: IDLE STATE */}
+            {!isScanning && !results && (
+              <motion.div
+                key="idle"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="my-auto space-y-5"
+              >
+                <div className="border-b border-white/[0.08] pb-3">
+                  <span className="text-[11px] font-mono font-medium uppercase tracking-wider text-[#f97316] block mb-0.5">
+                    Execution Telemetry
+                  </span>
+                  <h3 className="text-xl font-bold text-[#faf9f5]">
+                    Awaiting Input Files
                   </h3>
-                  <p className="text-xs text-neutral-400 font-mono">
-                    Step {currentStepIndex + 1} of {SCAN_STEPS.length}
+                  <p className="text-xs text-[#b7b5a9] mt-0.5">
+                    Provide an acoustic tap .wav and a surface image to initiate pipeline.
                   </p>
                 </div>
 
-                {/* Progress bar */}
-                <div className="w-full bg-neutral-800 h-2 rounded-full overflow-hidden border border-neutral-700/50">
-                  <motion.div
-                    className="bg-primary h-full rounded-full"
-                    initial={{ width: "0%" }}
-                    animate={{ width: `${((currentStepIndex + 1) / SCAN_STEPS.length) * 100}%` }}
-                    transition={{ duration: 0.5 }}
-                  />
+                {/* IDLE TRACE TERMINAL CONSOLE */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-mono text-[#85827a]">
+                    <Terminal size={14} />
+                    <span>System Status: Standby</span>
+                  </div>
+                  <pre className="bg-black/40 backdrop-blur-md border border-white/5 rounded-xl p-5 font-mono text-[11px] leading-relaxed text-[#b7b5a9] shadow-inner space-y-1">
+                    <div>[SYSTEM] TapEye Daemon v1.2.0 initialized.</div>
+                    <div>[SYSTEM] DSP engine: Librosa (MFCC, FFT, Spectral Centroid)</div>
+                    <div>[SYSTEM] Vision backbone: MobileNetV2 (224x224 input tensor)</div>
+                    <div>[SYSTEM] Ready for multipart ingestion...</div>
+                  </pre>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* RESULTS DISPLAY DASHBOARD */}
-          {results && !isScanning && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col items-center gap-8"
-            >
-              <ResultsDashboard results={results} />
-              
-              <ProbabilityRadarChart
-                acousticProbs={results.acoustic_probs}
-                visualProbs={results.visual_probs}
-                fusedVerdict={results.verdict}
-                fusedConfidence={results.fusion_confidence}
-              />
-
-              <button
-                onClick={resetScan}
-                className="px-6 py-3 rounded-xl bg-neutral-900 border border-neutral-800 hover:border-neutral-700 text-neutral-300 font-medium text-sm flex items-center gap-2 transition hover:bg-neutral-800/80 cursor-pointer"
-              >
-                <RefreshCw className="w-4 h-4" /> Scan Another Sample
-              </button>
-            </motion.div>
-          )}
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

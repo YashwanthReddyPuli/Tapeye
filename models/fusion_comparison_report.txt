@@ -1,0 +1,34 @@
+====================================================================
+TapEye Late-Fusion Multimodal Performance Comparison Report
+====================================================================
+Winning Fusion Model: Logistic Regression Meta-Classifier
+
+Summary Performance Comparison (Held-Out Test Set):
+--------------------------------------------------------------------
+ Pipeline Branch             | Accuracy | Precision | Recall | F1-Score
+--------------------------------------------------------------------
+ Acoustic-Only Branch        |   66.67% |    0.5000 | 0.6667 |   0.5556
+ Visual-Only Branch          |   66.67% |    0.5000 | 0.6667 |   0.5556
+ Fused (Decision Tree)       |   66.67% |    0.5000 | 0.6667 |   0.5556
+ Fused (Logistic Regression) |  100.00% |    1.0000 | 1.0000 |   1.0000
+--------------------------------------------------------------------
+ Fusion Advantage over Acoustic-Only: +33.33% Accuracy
+ Fusion Advantage over Visual-Only:   +33.33% Accuracy
+
+Winning Fused Model Classification Report:
+              precision    recall  f1-score   support
+
+         bad       1.00      1.00      1.00         1
+  borderline       1.00      1.00      1.00         1
+        good       1.00      1.00      1.00         1
+
+    accuracy                           1.00         3
+   macro avg       1.00      1.00      1.00         3
+weighted avg       1.00      1.00      1.00         3
+
+
+Confusion Matrix (Labels: ['bad', 'borderline', 'good']):
+[[1 0 0]
+ [0 1 0]
+ [0 0 1]]
+====================================================================

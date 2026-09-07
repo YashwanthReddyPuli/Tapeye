@@ -59,12 +59,12 @@ export default function UploadZone({
         onDragLeave={() => setIsDraggingAudio(false)}
         onDrop={handleAudioDrop}
         onClick={() => !audioFile && audioInputRef.current?.click()}
-        className={`relative flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-2xl transition-all duration-300 backdrop-blur-md cursor-pointer ${
+        className={`relative flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-2xl transition-all duration-200 cursor-pointer ${
           isDraggingAudio
-            ? "border-primary bg-primary/10 shadow-[0_0_20px_rgba(217,119,87,0.2)]"
+            ? "border-primary bg-primary/10"
             : audioFile
-            ? "border-emerald-500/50 bg-emerald-950/20"
-            : "border-neutral-800 bg-neutral-900/60 hover:border-neutral-700 hover:bg-neutral-900/90"
+            ? "border-emerald-500/60 bg-emerald-950/20"
+            : "border-[#383630] bg-[#24231f] hover:border-[#52514a]"
         }`}
       >
         <input
@@ -90,16 +90,16 @@ export default function UploadZone({
                   e.stopPropagation();
                   onAudioChange(null);
                 }}
-                className="p-1 hover:bg-neutral-800 rounded-full text-neutral-400 hover:text-white transition"
+                className="p-1 hover:bg-[#383630] rounded-full text-[#a3a096] hover:text-white transition"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="p-3 bg-neutral-800/80 rounded-xl flex items-center gap-3 w-full border border-neutral-700">
+            <div className="p-3 bg-[#1b1a17] rounded-xl flex items-center gap-3 w-full border border-[#383630]">
               <FileAudio className="w-8 h-8 text-primary shrink-0" />
               <div className="overflow-hidden text-left">
-                <p className="text-sm font-medium text-white truncate">{audioFile.name}</p>
-                <p className="text-xs text-neutral-400">
+                <p className="text-sm font-medium text-[#e6e4df] truncate">{audioFile.name}</p>
+                <p className="text-xs text-[#a3a096]">
                   {(audioFile.size / (1024 * 1024)).toFixed(2)} MB
                 </p>
               </div>
@@ -113,12 +113,12 @@ export default function UploadZone({
           </div>
         ) : (
           <div className="flex flex-col items-center text-center space-y-3">
-            <div className="p-4 bg-neutral-800/50 rounded-full text-primary border border-neutral-700/50 group-hover:scale-105 transition-transform">
-              <Music className="w-8 h-8" />
+            <div className="p-4 bg-[#1b1a17] rounded-full text-primary border border-[#383630]">
+              <Music className="w-7 h-7" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-neutral-200">Acoustic Audio (.wav)</p>
-              <p className="text-xs text-neutral-400 mt-1">
+              <p className="text-sm font-semibold text-[#e6e4df]">Acoustic Audio (.wav)</p>
+              <p className="text-xs text-[#a3a096] mt-1">
                 Drag & drop tap recording or <span className="text-primary underline">browse</span>
               </p>
             </div>
@@ -135,12 +135,12 @@ export default function UploadZone({
         onDragLeave={() => setIsDraggingImage(false)}
         onDrop={handleImageDrop}
         onClick={() => !imageFile && imageInputRef.current?.click()}
-        className={`relative flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-2xl transition-all duration-300 backdrop-blur-md cursor-pointer ${
+        className={`relative flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-2xl transition-all duration-200 cursor-pointer ${
           isDraggingImage
-            ? "border-primary bg-primary/10 shadow-[0_0_20px_rgba(217,119,87,0.2)]"
+            ? "border-primary bg-primary/10"
             : imageFile
-            ? "border-emerald-500/50 bg-emerald-950/20"
-            : "border-neutral-800 bg-neutral-900/60 hover:border-neutral-700 hover:bg-neutral-900/90"
+            ? "border-emerald-500/60 bg-emerald-950/20"
+            : "border-[#383630] bg-[#24231f] hover:border-[#52514a]"
         }`}
       >
         <input
@@ -166,13 +166,13 @@ export default function UploadZone({
                   e.stopPropagation();
                   onImageChange(null);
                 }}
-                className="p-1 hover:bg-neutral-800 rounded-full text-neutral-400 hover:text-white transition"
+                className="p-1 hover:bg-[#383630] rounded-full text-[#a3a096] hover:text-white transition"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
             {imagePreviewUrl ? (
-              <div className="relative w-full h-28 rounded-xl overflow-hidden border border-neutral-700">
+              <div className="relative w-full h-28 rounded-xl overflow-hidden border border-[#383630]">
                 <img
                   src={imagePreviewUrl}
                   alt="Produce Preview"
@@ -180,11 +180,11 @@ export default function UploadZone({
                 />
               </div>
             ) : (
-              <div className="p-3 bg-neutral-800/80 rounded-xl flex items-center gap-3 w-full border border-neutral-700">
+              <div className="p-3 bg-[#1b1a17] rounded-xl flex items-center gap-3 w-full border border-[#383630]">
                 <FileImage className="w-8 h-8 text-primary shrink-0" />
                 <div className="overflow-hidden text-left">
-                  <p className="text-sm font-medium text-white truncate">{imageFile.name}</p>
-                  <p className="text-xs text-neutral-400">
+                  <p className="text-sm font-medium text-[#e6e4df] truncate">{imageFile.name}</p>
+                  <p className="text-xs text-[#a3a096]">
                     {(imageFile.size / (1024 * 1024)).toFixed(2)} MB
                   </p>
                 </div>
@@ -193,12 +193,12 @@ export default function UploadZone({
           </div>
         ) : (
           <div className="flex flex-col items-center text-center space-y-3">
-            <div className="p-4 bg-neutral-800/50 rounded-full text-primary border border-neutral-700/50 group-hover:scale-105 transition-transform">
-              <ImageIcon className="w-8 h-8" />
+            <div className="p-4 bg-[#1b1a17] rounded-full text-primary border border-[#383630]">
+              <ImageIcon className="w-7 h-7" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-neutral-200">Visual Image (.jpg / .png)</p>
-              <p className="text-xs text-neutral-400 mt-1">
+              <p className="text-sm font-semibold text-[#e6e4df]">Visual Image (.jpg / .png)</p>
+              <p className="text-xs text-[#a3a096] mt-1">
                 Drag & drop surface photo or <span className="text-primary underline">browse</span>
               </p>
             </div>

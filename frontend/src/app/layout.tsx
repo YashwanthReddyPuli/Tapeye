@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
+import Sidenavbar from "@/components/Sidenavbar";
 
 export const metadata: Metadata = {
-  title: "TapEye OS | Dual-Modal Produce Quality Scanner",
-  description: "Late-Fusion Acoustic + Visual Machine Learning Produce Quality Assessment",
+  title: "TapEye | Produce Quality Assessment",
+  description: "Dual-modal acoustic and visual late-fusion produce grading system.",
 };
 
 export default function RootLayout({
@@ -16,9 +14,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} bg-background text-foreground antialiased selection:bg-primary selection:text-white min-h-screen overflow-x-hidden`}>
-        {children}
+      <body className="bg-[#121110] text-[#faf9f5] antialiased selection:bg-[#b05730] selection:text-white">
+        <Sidenavbar>
+          {children}
+        </Sidenavbar>
       </body>
     </html>
   );
 }
+

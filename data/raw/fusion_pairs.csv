@@ -1,0 +1,16 @@
+audio_path,image_path,label
+data/raw/acoustic/good_tap_1.wav,data/raw/visual/good/good_fruit_1.jpg,good
+data/raw/acoustic/good_tap_2.wav,data/raw/visual/good/good_fruit_2.jpg,good
+data/raw/acoustic/good_tap_3.wav,data/raw/visual/good/good_fruit_3.jpg,good
+data/raw/acoustic/good_tap_4.wav,data/raw/visual/good/good_fruit_4.jpg,good
+data/raw/acoustic/good_tap_5.wav,data/raw/visual/good/good_fruit_5.jpg,good
+data/raw/acoustic/borderline_tap_1.wav,data/raw/visual/borderline/borderline_fruit_1.jpg,borderline
+data/raw/acoustic/borderline_tap_2.wav,data/raw/visual/borderline/borderline_fruit_2.jpg,borderline
+data/raw/acoustic/borderline_tap_3.wav,data/raw/visual/borderline/borderline_fruit_3.jpg,borderline
+data/raw/acoustic/borderline_tap_4.wav,data/raw/visual/borderline/borderline_fruit_4.jpg,borderline
+data/raw/acoustic/borderline_tap_5.wav,data/raw/visual/borderline/borderline_fruit_5.jpg,borderline
+data/raw/acoustic/bad_tap_1.wav,data/raw/visual/bad/bad_fruit_1.jpg,bad
+data/raw/acoustic/bad_tap_2.wav,data/raw/visual/bad/bad_fruit_2.jpg,bad
+data/raw/acoustic/bad_tap_3.wav,data/raw/visual/bad/bad_fruit_3.jpg,bad
+data/raw/acoustic/bad_tap_4.wav,data/raw/visual/bad/bad_fruit_4.jpg,bad
+data/raw/acoustic/bad_tap_5.wav,data/raw/visual/bad/bad_fruit_5.jpg,bad

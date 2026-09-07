@@ -1,0 +1,81 @@
+{
+  "test_samples": 3,
+  "class_names": [
+    "bad",
+    "borderline",
+    "good"
+  ],
+  "acoustic_branch": {
+    "accuracy": 0.6666666666666666,
+    "precision": 0.5,
+    "recall": 0.6666666666666666,
+    "f1_score": 0.5555555555555555,
+    "confusion_matrix": [
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ]
+  },
+  "visual_branch": {
+    "accuracy": 0.6666666666666666,
+    "precision": 0.5,
+    "recall": 0.6666666666666666,
+    "f1_score": 0.5555555555555555,
+    "confusion_matrix": [
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ]
+  },
+  "fused_multimodal": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "confusion_matrix": [
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ]
+  },
+  "fusion_improvements": {
+    "accuracy_gain_over_acoustic_pct": 33.333333333333336,
+    "accuracy_gain_over_visual_pct": 33.333333333333336
+  }
+}

@@ -1,130 +1,228 @@
 "use client";
 
-import React, { useState } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
-import HolographicBeams from "@/components/ui/beams-background";
-import { LayoutDashboard, BarChart2, Info, Eye, Cpu, Layers, ShieldCheck, Server, Globe } from "lucide-react";
-import Link from "next/link";
+import React from "react";
+import {
+  Mic,
+  Camera,
+  ArrowRight,
+  Combine,
+  Activity,
+  Cpu,
+  Layers,
+  Zap,
+} from "lucide-react";
 import { motion } from "framer-motion";
 
-const sidebarLinks = [
-  {
-    label: "Scanner Dashboard",
-    href: "/",
-    icon: <LayoutDashboard className="text-neutral-400 h-5 w-5 flex-shrink-0" />,
-  },
-  {
-    label: "Model Performance",
-    href: "/performance",
-    icon: <BarChart2 className="text-neutral-400 h-5 w-5 flex-shrink-0" />,
-  },
-  {
-    label: "System Architecture",
-    href: "/about",
-    icon: <Info className="text-primary h-5 w-5 flex-shrink-0" />,
-  },
-];
+export default function ArchitecturePage() {
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+        staggerChildren: 0.12,
+      },
+    },
+  };
 
-export default function AboutPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+  };
 
   return (
-    <div className="flex h-screen w-full bg-background overflow-hidden relative">
-      <HolographicBeams density={15} speed={0.8} aberration={1.8} opacity={30} />
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className="max-w-5xl w-full mx-auto space-y-12 text-[#faf9f5] pb-16"
+    >
+      {/* 1. CENTERED ELEGANT HEADER */}
+      <motion.div variants={itemVariants} className="text-center space-y-3 pt-2">
+        <span className="inline-flex items-center gap-1.5 text-xs font-mono text-[#f97316] uppercase tracking-widest bg-orange-500/10 px-3 py-1 rounded-full border border-orange-500/20">
+          <Zap size={13} /> Architecture Overview
+        </span>
+        <h1 className="text-4xl md:text-5xl font-serif font-normal tracking-tight text-[#faf9f5]">
+          Dual-Modal Late Fusion Pipeline
+        </h1>
+        <p className="text-sm md:text-base font-sans text-[#b7b5a9] max-w-xl mx-auto leading-relaxed">
+          Asynchronous processing of acoustic resonance and spatial features.
+        </p>
+      </motion.div>
 
-      {/* SIDEBAR COMPONENT */}
-      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
-        <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-            <Link href="/" className="font-bold flex space-x-2 items-center text-sm py-2 relative z-20">
-              <div className="h-6 w-6 bg-primary rounded-lg flex items-center justify-center text-white">
-                <Eye className="w-4 h-4" />
+      {/* 2. THE HERO PIPELINE VISUAL (MINIMALIST FLOW) */}
+      <motion.div
+        variants={itemVariants}
+        className="p-8 md:p-10 bg-white/[0.01] backdrop-blur-[40px] border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.08)] rounded-[28px] relative overflow-hidden"
+      >
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 max-w-4xl mx-auto">
+          {/* LEFT: 2 INPUT PILLS STACKED */}
+          <div className="flex flex-col gap-4 w-full md:w-auto flex-1">
+            {/* Pill 1: Acoustic */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="flex items-center gap-3.5 px-6 py-4 rounded-2xl bg-black/30 backdrop-blur-xl border border-white/10 shadow-lg"
+            >
+              <div className="h-10 w-10 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-[#f97316] shrink-0">
+                <Mic size={20} />
               </div>
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="font-extrabold text-white text-base tracking-wider whitespace-pre"
-              >
-                TapEye OS
-              </motion.span>
-            </Link>
-            <div className="mt-8 flex flex-col gap-2">
-              {sidebarLinks.map((link, idx) => (
-                <SidebarLink key={idx} link={link} />
-              ))}
-            </div>
-          </div>
-        </SidebarBody>
-      </Sidebar>
+              <div className="text-left">
+                <div className="text-xs font-mono text-[#f97316] uppercase tracking-wider font-semibold">
+                  Audio Branch
+                </div>
+                <div className="text-sm font-semibold text-[#faf9f5]">
+                  Acoustic (MFCC)
+                </div>
+              </div>
+            </motion.div>
 
-      {/* CONTENT AREA */}
-      <div className="flex-1 h-full overflow-y-auto z-30 p-6 md:p-12 relative flex flex-col items-center">
-        <div className="w-full max-w-4xl space-y-8 my-auto">
-          {/* HEADER */}
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-900/90 border border-neutral-800 backdrop-blur-md">
-              <Cpu className="w-4 h-4 text-primary" />
-              <span className="text-xs font-semibold text-neutral-300 tracking-wide uppercase">
-                System Design & Late-Fusion Architecture
-              </span>
-            </div>
-            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white">
-              About TapEye Architecture
-            </h1>
-            <p className="text-sm text-neutral-400 max-w-2xl">
-              Understanding dual-modal acoustic-visual fusion, software-in-the-loop validation, and decoupled full-stack implementation.
-            </p>
+            {/* Pill 2: Visual */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="flex items-center gap-3.5 px-6 py-4 rounded-2xl bg-black/30 backdrop-blur-xl border border-white/10 shadow-lg"
+            >
+              <div className="h-10 w-10 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-[#9c87f5] shrink-0">
+                <Camera size={20} />
+              </div>
+              <div className="text-left">
+                <div className="text-xs font-mono text-[#9c87f5] uppercase tracking-wider font-semibold">
+                  Vision Branch
+                </div>
+                <div className="text-sm font-semibold text-[#faf9f5]">
+                  Visual (MobileNetV2)
+                </div>
+              </div>
+            </motion.div>
           </div>
 
-          {/* LATE FUSION RATIONALE CARD */}
-          <div className="p-6 rounded-2xl bg-neutral-900/80 border border-neutral-800 backdrop-blur-md space-y-4">
-            <div className="flex items-center gap-3">
-              <Layers className="w-6 h-6 text-primary" />
-              <h3 className="text-xl font-bold text-white">Why Late-Fusion Meta-Classification?</h3>
-            </div>
-            <p className="text-sm text-neutral-300 leading-relaxed">
-              Traditional early-fusion methods concatenate raw audio spectrums and image pixels at input time, leading to high-dimensional feature explosion and vulnerability to modality-specific noise. TapEye employs <span className="text-primary font-semibold">Late Fusion</span>:
-            </p>
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-neutral-300 pt-2">
-              <li className="p-4 rounded-xl bg-neutral-800/50 border border-neutral-700/50">
-                <strong className="text-white block text-sm mb-1">Acoustic Branch (SVM)</strong>
-                Processes physical resonance, density, and elasticity via 13 MFCC coefficients and raw FFT magnitudes to reveal internal hollows or rot.
-              </li>
-              <li className="p-4 rounded-xl bg-neutral-800/50 border border-neutral-700/50">
-                <strong className="text-white block text-sm mb-1">Visual Branch (MobileNetV2)</strong>
-                Fine-tuned Transfer Learning model evaluating surface blemishes, discoloration, skin integrity, and ripeness.
-              </li>
-            </ul>
+          {/* CONNECTOR ARROW */}
+          <div className="flex items-center justify-center text-[#f97316] p-2">
+            <motion.div
+              animate={{ x: [0, 4, 0] }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+            >
+              <ArrowRight size={32} className="text-[#f97316]" />
+            </motion.div>
           </div>
 
-          {/* TECH STACK GRID */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-2xl bg-neutral-900/80 border border-neutral-800 backdrop-blur-md space-y-3">
-              <Server className="w-6 h-6 text-emerald-400" />
-              <h4 className="text-base font-bold text-white">FastAPI Backend</h4>
-              <p className="text-xs text-neutral-400">
-                High-performance async Python backend executing ML inference, temporary payload isolation, and metrics parsing.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-neutral-900/80 border border-neutral-800 backdrop-blur-md space-y-3">
-              <Globe className="w-6 h-6 text-purple-400" />
-              <h4 className="text-base font-bold text-white">Next.js Frontend</h4>
-              <p className="text-xs text-neutral-400">
-                Modern React App Router interface with animated drag-and-drop, stepped inference feedback, and Recharts visualization.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-neutral-900/80 border border-neutral-800 backdrop-blur-md space-y-3">
-              <ShieldCheck className="w-6 h-6 text-primary" />
-              <h4 className="text-base font-bold text-white">Core ML Suite</h4>
-              <p className="text-xs text-neutral-400">
-                Librosa for acoustic feature extraction, Scikit-Learn SVM, OpenCV, PyTorch MobileNetV2, and Logistic Regression meta-classifier.
-              </p>
-            </div>
+          {/* RIGHT: PILL 3 LATE-FUSION META-CLASSIFIER */}
+          <div className="w-full md:w-auto flex-1">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="flex items-center gap-4 px-6 py-7 rounded-2xl bg-orange-500/10 backdrop-blur-xl border border-[#f97316]/50 shadow-[0_0_25px_rgba(249,115,22,0.15)]"
+            >
+              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-orange-500 to-[#b05730] flex items-center justify-center text-white shrink-0 shadow-md">
+                <Combine size={24} />
+              </div>
+              <div className="text-left">
+                <div className="text-xs font-mono text-[#f97316] uppercase tracking-wider font-semibold">
+                  Unified Decision
+                </div>
+                <div className="text-base font-bold text-[#faf9f5]">
+                  Late-Fusion Meta-Classifier
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
+      </motion.div>
+
+      {/* 3. THE BENTO FEATURE GRID (4 CLEAN CARDS) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* CARD 1: ACOUSTIC ENGINE */}
+        <motion.div
+          variants={itemVariants}
+          whileHover={{ y: -4 }}
+          transition={{ duration: 0.2 }}
+          className="bg-white/[0.01] backdrop-blur-[40px] border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.08)] rounded-[24px] p-8 space-y-4 relative overflow-hidden flex flex-col justify-between"
+        >
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="h-10 w-10 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-[#f97316]">
+                <Activity size={20} />
+              </div>
+              <span className="text-xs font-mono text-[#f97316]">Acoustic Engine 🎵</span>
+            </div>
+            <h2 className="text-xl font-serif text-[#faf9f5]">
+              DSP &amp; Frequency Analysis
+            </h2>
+            <p className="text-sm font-sans text-[#b7b5a9] leading-relaxed">
+              Extracts 13 Mel-Frequency Cepstral Coefficients (MFCCs) via Librosa to detect internal tissue voids and turgor pressure loss.
+            </p>
+          </div>
+        </motion.div>
+
+        {/* CARD 2: VISION ENGINE */}
+        <motion.div
+          variants={itemVariants}
+          whileHover={{ y: -4 }}
+          transition={{ duration: 0.2 }}
+          className="bg-white/[0.01] backdrop-blur-[40px] border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.08)] rounded-[24px] p-8 space-y-4 relative overflow-hidden flex flex-col justify-between"
+        >
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="h-10 w-10 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-[#9c87f5]">
+                <Cpu size={20} />
+              </div>
+              <span className="text-xs font-mono text-[#9c87f5]">Vision Engine 📷</span>
+            </div>
+            <h2 className="text-xl font-serif text-[#faf9f5]">
+              Spatial Feature Extraction
+            </h2>
+            <p className="text-sm font-sans text-[#b7b5a9] leading-relaxed">
+              Fine-tuned MobileNetV2 backbone analyzes 224x224 RGB inputs for external blemishes, bruising, and skin decay.
+            </p>
+          </div>
+        </motion.div>
+
+        {/* CARD 3: FUSION ARCHITECTURE */}
+        <motion.div
+          variants={itemVariants}
+          whileHover={{ y: -4 }}
+          transition={{ duration: 0.2 }}
+          className="bg-white/[0.01] backdrop-blur-[40px] border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.08)] rounded-[24px] p-8 space-y-4 relative overflow-hidden flex flex-col justify-between"
+        >
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="h-10 w-10 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-[#f97316]">
+                <Layers size={20} />
+              </div>
+              <span className="text-xs font-mono text-[#f97316]">Fusion Architecture 🧠</span>
+            </div>
+            <h2 className="text-xl font-serif text-[#faf9f5]">
+              Decision-Level Late Fusion
+            </h2>
+            <p className="text-sm font-sans text-[#b7b5a9] leading-relaxed">
+              Concatenates unimodal probability distributions into a unified 6D tensor, utilizing a Meta-Classifier to resolve sensory conflicts.
+            </p>
+          </div>
+        </motion.div>
+
+        {/* CARD 4: TECH STACK */}
+        <motion.div
+          variants={itemVariants}
+          whileHover={{ y: -4 }}
+          transition={{ duration: 0.2 }}
+          className="bg-white/[0.01] backdrop-blur-[40px] border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.08)] rounded-[24px] p-8 space-y-4 relative overflow-hidden flex flex-col justify-between"
+        >
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="h-10 w-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                <Zap size={20} />
+              </div>
+              <span className="text-xs font-mono text-emerald-400">Tech Stack ⚡</span>
+            </div>
+            <h2 className="text-xl font-serif text-[#faf9f5]">
+              Edge-to-Cloud Deployment
+            </h2>
+            <p className="text-sm font-sans text-[#b7b5a9] leading-relaxed">
+              FastAPI inference engine, React/Next.js frontend, and Framer Motion UI. Built for sub-100ms classification latency.
+            </p>
+          </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

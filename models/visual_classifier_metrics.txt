@@ -1,0 +1,30 @@
+==================================================
+TapEye Visual Classifier (MobileNetV2) Metrics Report
+==================================================
+Model Architecture: MobileNetV2 (Transfer Learning + Fine-Tuning)
+Input Resolution: 224x224x3
+
+Test Set Metrics:
+  - Accuracy:  1.0000
+  - Test Loss: 0.5556
+  - Precision: 1.0000 (weighted)
+  - Recall:    1.0000 (weighted)
+  - F1 Score:  1.0000 (weighted)
+
+Classification Report:
+              precision    recall  f1-score   support
+
+         bad       1.00      1.00      1.00         1
+  borderline       1.00      1.00      1.00         1
+        good       1.00      1.00      1.00         1
+
+    accuracy                           1.00         3
+   macro avg       1.00      1.00      1.00         3
+weighted avg       1.00      1.00      1.00         3
+
+
+Confusion Matrix (Labels: ['bad', 'borderline', 'good']):
+[[1 0 0]
+ [0 1 0]
+ [0 0 1]]
+==================================================
