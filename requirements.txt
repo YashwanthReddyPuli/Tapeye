@@ -6,3 +6,4 @@ tensorflow
 opencv-python
 matplotlib
 jupyter
+soundfile
