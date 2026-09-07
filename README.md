@@ -245,14 +245,22 @@ python scripts/evaluate_system.py
 ```
 *Evaluates Acoustic-Only vs Visual-Only vs Fused Multimodal Scanner across the test set, outputting text summary to `models/system_evaluation_report.txt` and machine-readable metrics to `models/system_evaluation_metrics.json`.*
 
-#### 3. Running Verification Suites:
+#### 4. Running the Streamlit Dashboard UI:
 ```bash
-python scripts/verify_phase1.py  # Verify acoustic feature extraction
-python scripts/verify_phase2.py  # Verify acoustic classifier
-python scripts/verify_phase3.py  # Verify visual MobileNetV2 pipeline
-python scripts/verify_phase4.py  # Verify late-fusion meta-classifier
-python scripts/verify_phase5.py  # Verify end-to-end scanner & error handling
+streamlit run dashboard/app.py
 ```
+*Launches the multi-page interactive web interface featuring real-time dual-modal inference (`1_Scan`), accuracy & benchmark visualizations (`2_Model_Performance`), and system architecture details (`3_About`).*
+
+```text
+dashboard/
+├── app.py                      # Main landing page & model status monitor
+├── utils.py                    # Shared model caching & Matplotlib signal plotting
+└── pages/
+    ├── 1_Scan.py               # Interactive inference UI (Dual Uploads, Waveforms, Fused Cards)
+    ├── 2_Model_Performance.py  # Unimodal vs Multimodal accuracy & F1 benchmark charts
+    └── 3_About.py              # Architecture overview & tech stack documentation
+```
+
 
 
 
